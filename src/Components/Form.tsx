@@ -1,6 +1,5 @@
 import {
   Button,
-  FormControl,
   Flex,
   Heading,
   Input,
@@ -8,6 +7,7 @@ import {
   Text,
   useColorModeValue,
   Box,
+  useToast,
 } from "@chakra-ui/react";
 import { FormEvent, useState } from "react";
 import Tasks from "./Tasks";
@@ -21,8 +21,35 @@ export default function Form(): JSX.Element {
   const [newTask, setNewTask] = useState<string>("");
   const [tasks, setTasks] = useState<ITask[]>([]);
 
+  const toast = useToast();
+
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
+    if (newTask.trim() === "")
+      return toast({
+        title: "Add something",
+        status: "error",
+        duration: 4000,
+        position: "top-right",
+        isClosable: true,
+        containerStyle: {
+          marginTop: "20px",
+          marginRight: "20px",
+        },
+      });
+    if (newTask.length < 5) {
+      return toast({
+        title: "Needs more than 5 characters",
+        status: "error",
+        duration: 4000,
+        position: "top-right",
+        isClosable: true,
+        containerStyle: {
+          marginTop: "20px",
+          marginRight: "20px",
+        },
+      });
+    }
     addTask(newTask);
     setNewTask("");
   }
@@ -70,13 +97,13 @@ export default function Form(): JSX.Element {
           >
             Add a task
           </Text>
-          <FormControl id="email">
+          <form onSubmit={handleSubmit}>
             <Input
               value={newTask}
               type="text"
               onChange={(e) => setNewTask(e.target.value)}
             />
-          </FormControl>
+          </form>
           <Stack spacing={6}>
             <Button
               bg={"blue.400"}
